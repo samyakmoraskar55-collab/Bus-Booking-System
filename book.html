@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>BusGo - Book Now</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+
+<div class="logo">
+<a href="/">Bus<span>Go</span></a>
+</div>
+
+<ul class="nav-links">
+<li><a href="/">Home</a></li>
+<li><a href="/book" class="active">Book Now</a></li>
+<li><a href="/bookings">My Bookings</a></li>
+<li><a href="#">Contact</a></li>
+</ul>
+
+</nav>
+
+
+<!-- SEARCH SUMMARY -->
+
+<section class="search-summary">
+
+<div class="container">
+
+<h2>Your Search</h2>
+
+<div class="search-info">
+
+<p><strong>From:</strong> <span id="searchFrom">{{ source }}</span></p>
+
+<p><strong>To:</strong> <span id="searchTo">{{ destination }}</span></p>
+
+<p><strong>Date:</strong> <span id="searchDate">{{ date }}</span></p>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- AVAILABLE BUSES -->
+
+<section class="available-buses">
+
+<div class="container">
+
+<h2>Available Buses</h2>
+
+
+<!-- Bus 1 -->
+
+<div class="bus-card">
+
+<div class="bus-info">
+
+<h3>Express Travels <span class="bus-type">AC Sleeper</span></h3>
+
+<p>08:00 AM - 02:00 PM</p>
+
+<div class="bus-timing">Duration: 6h | 45 Seats</div>
+
+</div>
+
+<div class="bus-price">₹1200</div>
+
+<button class="btn-view-seats" onclick="openModal(1200, 'Express Travels', '08:00 AM - 02:00 PM')">Select Seats</button>
+
+</div>
+
+
+
+<!-- Bus 2 -->
+
+<div class="bus-card">
+
+<div class="bus-info">
+
+<h3>CityLine Premium <span class="bus-type">Seater</span></h3>
+
+<p>10:30 AM - 04:30 PM</p>
+
+<div class="bus-timing">Duration: 6h | 50 Seats</div>
+
+</div>
+
+<div class="bus-price">₹900</div>
+
+<button class="btn-view-seats" onclick="openModal(900, 'CityLine Premium', '10:30 AM - 04:30 PM')">Select Seats</button>
+
+</div>
+
+
+
+<!-- Bus 3 -->
+
+<div class="bus-card">
+
+<div class="bus-info">
+
+<h3>Red Express <span class="bus-type">AC Semi Sleeper</span></h3>
+
+<p>02:00 PM - 08:00 PM</p>
+
+<div class="bus-timing">Duration: 6h | 40 Seats</div>
+
+</div>
+
+<div class="bus-price">₹1400</div>
+
+<button class="btn-view-seats" onclick="openModal(1400, 'Red Express', '02:00 PM - 08:00 PM')">Select Seats</button>
+
+</div>
+
+
+</div>
+
+</section>
+
+
+
+<!-- SEAT SELECTION MODAL -->
+
+<div class="modal" id="seatModal">
+
+<div class="modal-content">
+
+<span class="close" onclick="closeModal()">&times;</span>
+
+<h2>Select Your Seats</h2>
+
+<p>Price per seat: ₹<span id="pricePerSeat">0</span></p>
+
+<form id="bookingForm" method="POST" action="/book">
+<input type="hidden" name="source" value="{{ source }}">
+<input type="hidden" name="destination" value="{{ destination }}">
+<input type="hidden" name="date" value="{{ date }}">
+<input type="hidden" name="seats" id="submitSeats" value="">
+<input type="hidden" name="amount" id="submitAmount" value="">
+<input type="hidden" name="bus" id="submitBus" value="">
+<input type="hidden" name="time" id="submitTime" value="">
+<div style="margin-bottom: 15px; margin-top: 10px;">
+<input type="text" name="name" id="passengerName" placeholder="Enter Passenger Name" required style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+</div>
+</form>
+
+
+<div class="seat-legend">
+
+<div class="legend-item"><span class="seat selected"></span> Selected</div>
+
+<div class="legend-item"><span class="seat booked"></span> Booked</div>
+
+<div class="legend-item"><span class="seat"></span> Available</div>
+
+</div>
+
+
+<div class="seats-grid" id="seatGrid"></div>
+
+
+<div class="booking-details">
+
+<p>Selected: <span id="selectedCount">0</span> seats</p>
+
+<p class="total-price">Total: ₹<span id="totalAmount">0</span></p>
+
+<button class="btn-confirm" onclick="confirmBooking()">Book Now</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+
+<!-- FOOTER -->
+
+<footer class="footer">
+
+<div class="container">
+
+<p>© 2026 BusGo | Bus Booking System Project</p>
+
+</div>
+
+</footer>
+
+
+
+<script>
+
+// Date is injected via Jinja, so no need to dynamically override it here
+
+
+let currentPrice = 0;
+
+const totalSeats = 16;
+
+let bookedSeats = [2,5,11];
+
+let selectedSeats = [];
+
+
+function openModal(price, busName, busTime){
+
+currentPrice = price;
+
+document.getElementById("pricePerSeat").innerText = price;
+document.getElementById("submitBus").value = busName;
+document.getElementById("submitTime").value = busTime;
+
+document.getElementById("seatModal").style.display = "flex";
+
+generateSeats();
+
+}
+
+
+function closeModal(){
+
+document.getElementById("seatModal").style.display = "none";
+
+}
+
+
+function generateSeats(){
+
+const grid = document.getElementById("seatGrid");
+
+grid.innerHTML = "";
+
+selectedSeats = [];
+
+updateTotal();
+
+
+for(let i=1;i<=totalSeats;i++){
+
+const seat = document.createElement("div");
+
+seat.classList.add("seat");
+
+seat.innerText = i;
+
+
+if(bookedSeats.includes(i)){
+
+seat.classList.add("booked");
+
+seat.innerText = "X";
+
+}
+
+else{
+
+seat.onclick = function(){
+
+this.classList.toggle("selected");
+
+const seatNum = parseInt(this.innerText);
+
+
+if(selectedSeats.includes(seatNum)){
+
+selectedSeats = selectedSeats.filter(s => s !== seatNum);
+
+}
+
+else{
+
+selectedSeats.push(seatNum);
+
+}
+
+
+updateTotal();
+
+};
+
+}
+
+
+grid.appendChild(seat);
+
+}
+
+}
+
+
+function updateTotal(){
+
+document.getElementById("selectedCount").innerText = selectedSeats.length;
+
+document.getElementById("totalAmount").innerText = selectedSeats.length * currentPrice;
+
+}
+
+
+function confirmBooking(){
+
+if(selectedSeats.length > 0){
+
+const passengerName = document.getElementById("passengerName").value;
+
+if(!passengerName.trim()){
+
+alert("Please enter passenger name.");
+return;
+
+}
+
+alert("Booking Confirmed!\nSeats: "+selectedSeats.join(", ")+"\nTotal Paid: ₹"+selectedSeats.length*currentPrice);
+
+document.getElementById("submitSeats").value = selectedSeats.join(", ");
+document.getElementById("submitAmount").value = selectedSeats.length * currentPrice;
+document.getElementById("bookingForm").submit();
+
+}
+
+else{
+
+alert("Please select at least one seat.");
+
+}
+
+}
+
+
+window.onclick = function(event){
+
+const modal = document.getElementById("seatModal");
+
+if(event.target == modal){
+
+closeModal();
+
+}
+
+}
+
+</script>
+
+
+</body>
+
+</html>
