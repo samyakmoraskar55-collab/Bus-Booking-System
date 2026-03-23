@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>BusGo - My Bookings</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+
+<nav class="navbar">
+
+<div class="logo">
+<a href="/">Bus<span>Go</span></a>
+</div>
+
+<ul class="nav-links">
+<li><a href="/">Home</a></li>
+<li><a href="/book">Book Now</a></li>
+<li><a href="/bookings" class="active">My Bookings</a></li>
+<li><a href="#">Contact</a></li>
+</ul>
+
+</nav>
+
+
+<!-- HEADER -->
+
+<section class="bookings-header">
+
+<div class="container">
+
+<h1>My Bookings</h1>
+
+<p>View and manage all your bus bookings</p>
+
+</div>
+
+</section>
+
+
+
+<!-- BOOKINGS SECTION -->
+
+<section class="bookings-section">
+
+<div class="container">
+
+<div class="filter-options">
+
+<button class="filter-btn active" onclick="filterBookings('all')">All</button>
+
+<button class="filter-btn" onclick="filterBookings('confirmed')">Confirmed</button>
+
+<button class="filter-btn" onclick="filterBookings('cancelled')">Cancelled</button>
+
+</div>
+
+
+<div class="booking-list" id="bookingList">
+
+
+<!-- Flask Dynamic Data -->
+
+{% for b in bookings %}
+
+<div class="booking-card confirmed" data-status="confirmed">
+
+<div class="booking-header">
+
+<div class="booking-id">
+
+<span class="label">Booking ID:</span>
+
+<span class="value">#BG{{ b['id'] }}</span>
+
+</div>
+
+<span class="status-badge confirmed">Confirmed</span>
+
+</div>
+
+
+<div class="booking-details">
+
+<div class="route-info">
+
+<h3>{{ b['source'] }} → {{ b['destination'] }}</h3>
+
+<p><span class="label">Date:</span> {{ b['date'] }}</p>
+
+<p><span class="label">Passenger:</span> {{ b['name'] }}</p>
+
+<p><span class="label">Bus:</span> {{ b['bus'] }}</p>
+
+<p><span class="label">Time:</span> {{ b['time'] }}</p>
+
+</div>
+
+<div class="seat-info">
+
+<p><span class="label">Seats:</span> {{ b['seats'] }}</p>
+
+<p><span class="label">Passengers:</span> {{ b['seats'].split(', ')|length if b['seats'] else 0 }}</p>
+
+</div>
+
+</div>
+
+
+<div class="booking-footer">
+
+<div class="total-amount">
+
+<span class="label">Total Paid:</span>
+
+<span class="value">₹{{ b['amount'] }}</span>
+
+</div>
+
+<div class="booking-actions">
+
+<button class="btn-cancel" onclick="cancelBooking(this)">Cancel Booking</button>
+
+<button class="btn-download" onclick="downloadTicket()">Download Ticket</button>
+
+</div>
+
+</div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- FOOTER -->
+
+<footer class="footer">
+
+<div class="container">
+
+<p>© 2026 BusGo | Bus Booking System Project</p>
+
+</div>
+
+</footer>
+
+
+
+<script>
+
+function filterBookings(status){
+
+const cards = document.querySelectorAll(".booking-card");
+
+cards.forEach(card => {
+
+if(status === "all"){
+
+card.style.display = "block";
+
+}
+
+else{
+
+if(card.dataset.status === status){
+
+card.style.display = "block";
+
+}
+
+else{
+
+card.style.display = "none";
+
+}
+
+}
+
+});
+
+}
+
+
+function cancelBooking(btn){
+
+const card = btn.closest(".booking-card");
+
+card.dataset.status = "cancelled";
+
+card.querySelector(".status-badge").textContent = "Cancelled";
+
+card.querySelector(".status-badge").classList.remove("confirmed");
+
+card.querySelector(".status-badge").classList.add("cancelled");
+
+alert("Booking cancelled successfully");
+
+}
+
+
+function downloadTicket(){
+
+alert("Ticket download started");
+
+}
+
+</script>
+
+
+</body>
+
+</html>
