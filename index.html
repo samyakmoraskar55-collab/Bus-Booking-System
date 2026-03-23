@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>BusGo - Home</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+
+<nav class="navbar">
+
+<div class="logo">
+<a href="/">Bus<span>Go</span></a>
+</div>
+
+<ul class="nav-links">
+<li><a href="/" class="active">Home</a></li>
+<li><a href="/book">Book Now</a></li>
+<li><a href="/bookings">My Bookings</a></li>
+<li><a href="#">Contact</a></li>
+</ul>
+
+</nav>
+
+
+<!-- HERO SECTION -->
+
+<section class="hero">
+
+<div class="hero-content">
+
+<h1>Book Bus Tickets Online</h1>
+
+<p>Fast, Easy & Secure Bus Booking</p>
+
+</div>
+
+
+<!-- SEARCH BOX -->
+
+<div class="search-container">
+
+<div class="input-group">
+
+<label>From</label>
+
+<input type="text" id="from" placeholder="Mumbai">
+
+</div>
+
+
+<div class="input-group">
+
+<label>To</label>
+
+<input type="text" id="to" placeholder="Pune">
+
+</div>
+
+
+<div class="input-group">
+
+<label>Date</label>
+
+<input type="date" id="date">
+
+</div>
+
+
+<button class="btn-search" onclick="searchBuses()">Search Buses</button>
+
+</div>
+
+</section>
+
+
+
+<!-- POPULAR ROUTES -->
+
+<section class="popular-routes">
+
+<div class="container">
+
+<h2>Popular Routes</h2>
+
+<div class="route-grid">
+
+
+<div class="route-card">
+
+<img src="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=400&q=80">
+
+<h3>Mumbai → Pune</h3>
+
+<p>From ₹500</p>
+
+</div>
+
+
+<div class="route-card">
+
+<img src="https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&w=400&q=80">
+
+<h3>Delhi → Jaipur</h3>
+
+<p>From ₹700</p>
+
+</div>
+
+
+<div class="route-card">
+
+<img src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=400&q=80">
+
+<h3>Bangalore → Chennai</h3>
+
+<p>From ₹650</p>
+
+</div>
+
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- FOOTER -->
+
+<footer class="footer">
+
+<div class="container">
+
+<div class="footer-content">
+
+<div class="footer-section">
+
+<h3>BusGo</h3>
+
+<p>Best bus booking platform in the country.</p>
+
+</div>
+
+
+<div class="footer-section">
+
+<h3>Quick Links</h3>
+
+<ul>
+
+<li><a href="/">Home</a></li>
+
+<li><a href="/book">Book Now</a></li>
+
+<li><a href="#">About Us</a></li>
+
+</ul>
+
+</div>
+
+
+<div class="footer-section">
+
+<h3>Contact</h3>
+
+<p>Email: support@busgo.com</p>
+
+<p>Phone: +91 9876543210</p>
+
+</div>
+
+</div>
+
+
+<div class="footer-bottom">
+
+<p>© 2026 BusGo. All rights reserved.</p>
+
+</div>
+
+</div>
+
+</footer>
+
+
+
+<script>
+
+function searchBuses(){
+
+const from = document.getElementById("from").value;
+
+const to = document.getElementById("to").value;
+
+const date = document.getElementById("date").value;
+
+
+if(from && to && date){
+
+window.location.href = `/book?from=${from}&to=${to}&date=${date}`;
+
+}
+
+else{
+
+alert("Please fill in all fields!");
+
+}
+
+}
+
+</script>
+
+
+</body>
+
+</html>
